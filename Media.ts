@@ -1,6 +1,7 @@
 import { ListeUtils } from "./interfaces/ListeUtils";
 import { Liste } from "./collections/Liste";
 import { Emprunt } from "./Emprunt";
+import { SystemDateManager } from "./utils/SystemDateManager";
 
 export abstract class  Media implements ListeUtils {
 
@@ -32,21 +33,39 @@ export abstract class  Media implements ListeUtils {
 
     //méthodes concrètes
 
-    //La date de prochaine disponibilité
-    public dateDeDispo(liste: Liste<Emprunt>): Date {
+    // La date de prochaine disponibilité
+    // Elle correspond à la date d'emprunt la plus ancienne du média + 3 semaines (21 jours)
+    public dateDeProchaineDispo(liste: Liste<Emprunt>): string {
 
-        if(this.resteDesExemplaires()) return new Date();
+        if(this.resteDesExemplaires()) return ( this.titre + " est disponible\n" );
 
-        //parcours de la liste des emprunts dans la médiathèque
-            liste.debut();
-            while(liste.hasNext()) {
-                let emprunt = liste.suivant();
-                if (emprunt.getMedia().getId() == this.id) {
-                    let d = emprunt.getDate();
-                    console.log(d);
+        //parcours de la liste des emprunts dans la médiathèque pour trouver les emprunts
+        // de ce média et récupération de la date d'emprunt la plus ancienne
+        let dateAncienne: Date = new Date();
+
+        liste.debut();
+        while(liste.hasNext()) {
+            let emprunt = liste.suivant();
+            if (emprunt.getMedia().getId() == this.id) {
+                let d = emprunt.getDate();
+                if (d < dateAncienne) { 
+                    dateAncienne = d;
                 }
             }
+        }
 
+        // on ajoute les 21 jours de la date laplus ancienne des emprunts
+        let dateFinale = new Date(dateAncienne.getTime() + 21 * 24 * 60 * 60 * 1000);
+
+        return ( 
+            this.titre + " sera disponible à partir du " +
+            SystemDateManager.instance.getJour(dateFinale.getDay()) + " " +
+            dateFinale.getDate() + " " +
+            SystemDateManager.instance.getMois(dateFinale.getMonth()) + " " +
+            dateFinale.getFullYear() + "\n"
+            );
+
+           
     }
 
     // Le nombre d’exemplaires disponibles

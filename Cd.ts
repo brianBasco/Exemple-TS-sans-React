@@ -30,7 +30,7 @@ export class Cd extends Media {
             "groupe : " + this.groupe + "\n" +
             "genre : " + this.genre + "\n" +
             "duree : " + this.duree + "\n" +
-            "maison de prod : " + this.maisonDeProd 
+            "maison de prod : " + this.maisonDeProd  + "\n"
         );
     }
 

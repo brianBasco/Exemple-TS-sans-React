@@ -30,6 +30,9 @@ import { EmprunteurFactory } from "./Factory/EmprunteurFactory";
 import { EmpruntFactory } from "./Factory/EmpruntFactory";
 
 
+// La gestion des retards pour les emprunts est portée par la classe Emprunt, qui étend
+// la classe DateObserver, 
+
 export class Mediatheque extends Sujet {
 
     private static instance: Mediatheque;
@@ -50,11 +53,16 @@ export class Mediatheque extends Sujet {
     private listeDesEmprunteurs: Liste<Emprunteur>;
     private listeDesEmprunts: Liste<Emprunt>;
 
+    private date: Date;
+
     constructor() {
         super();
         this.listeDesMedias = new Liste();
         this.listeDesEmprunteurs = new Liste();
         this.listeDesEmprunts = new Liste();
+
+        this.notify();
+
     }
 
     // ------------------------- Accesseurs ------------------------ //
@@ -223,7 +231,15 @@ export class Mediatheque extends Sujet {
 
         return JSON.stringify(objet);
     }
-    
+
+    // ------------ Trigger pour l'envoi de mail pour les retardataires ----------- //
+
+    // Design pattern observer, on déclenche la méthode notify() lors de l'instanciation
+    // de la médiathèque et/ou quand on le veut
+    public controlerLesRetards(): void {
+        this.notify();
+    }
+
     // -----------------Méthodes Design Patter Observer à redéfinir ---------------
     protected notify(): void {
         
@@ -244,16 +260,7 @@ export class Mediatheque extends Sujet {
         
     }
 
-    //// Envoyer un e-mail ////
-    private sendMail(address: string, subject: string, content: string) {
-    let mail = `Mail from: mediatheque@lecnam.net
-        To: ${address}
-        Subject: ${subject}
     
-        ${content}`;
-
-        window.alert(mail)
-    }
 
    
 }

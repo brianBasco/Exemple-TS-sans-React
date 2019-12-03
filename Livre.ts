@@ -31,7 +31,7 @@ export class Livre extends Media {
             "auteur : " + this.auteur + "\n" +
             "genre : " + this.genre + "\n" +
             "nombre de pages : " + this.nombreDePages + "\n" +
-            "maison d'édition : " + this.maisonEdition
+            "maison d'édition : " + this.maisonEdition + "\n"
         );
     }
 

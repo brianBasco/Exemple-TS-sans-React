@@ -5,6 +5,32 @@ export class SystemDateManager  {
 
     private _date: Date;
 
+    // utilitaires pour passer la date en français
+    private jours: string[] = [
+        "dimanche",
+        "lundi",
+        "mardi",
+        "mercredi",
+        "jeudi",
+        "vendredi",
+        "samedi"
+    ];
+
+    private mois: string[] = [
+        "janvier",
+        "février",
+        "mars",
+        "avril",
+        "mai",
+        "juin",
+        "juillet",
+        "août",
+        "septembre",
+        "octobre",
+        "novembre",
+        "décembre"
+    ]
+
     private constructor() {
         this._date = new Date();
     }
@@ -30,5 +56,12 @@ export class SystemDateManager  {
         return Math.ceil((this._date.getTime() - date.getTime()) / 1000);
     }
 
+    getJour(jour: number): string {
+        return this.jours[jour];
+    }
+
+    getMois(mois: number) : string {
+        return this.mois[mois];
+    }
     
 }

@@ -32,7 +32,7 @@ export class Dvd extends Media {
             "réalisateur : " + this.realisateur + "\n" +
             "genre : " + this.genre + "\n" +
             "duree : " + this.duree + "\n" +
-            "maison de prod : " + this.maisonDeProd 
+            "maison de prod : " + this.maisonDeProd + "\n"
         );
     }
 

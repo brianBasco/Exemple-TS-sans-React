@@ -4,6 +4,7 @@ import { Cd, genreCd } from "./Cd";
 import { Livre, genreLivre } from "./Livre";
 import { Dvd, genreDvd } from "./Dvd";
 import { Mediatheque } from "./Mediatheque";
+import { SystemDateManager } from "./utils/SystemDateManager";
 
 let seb = new Emprunteur("pinet","sebastien","seb@bast.com");
 let sandra = new Emprunteur("brunet","sandra","sandra@bast.com");
@@ -61,3 +62,10 @@ mediatheque.afficherListeDesEmprunteurs();
 
 mediatheque.afficherListeDesEmprunts();
 
+SystemDateManager.instance.addDays(31);
+
+mediatheque.controlerLesRetards();
+
+console.log(livre.dateDeProchaineDispo(mediatheque.getListeDesEmprunts()));
+console.log(cd.dateDeProchaineDispo(mediatheque.getListeDesEmprunts()));
+console.log(dvd.dateDeProchaineDispo(mediatheque.getListeDesEmprunts()));
