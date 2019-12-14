@@ -69,4 +69,14 @@ export class Liste<T extends ListeUtils> implements Iterateur<T> {
         return false;
         }
     }
+
+    public getUnElement(element: T) : T {
+
+        for (let e of this.liste) {
+            if (e.getId() == element.getId()) return e;
+        }
+
+        // Si on ne trouve pas l'élément on retourne null
+        return null;
+    }
 }

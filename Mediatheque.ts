@@ -31,7 +31,8 @@ import { EmpruntFactory } from "./Factory/EmpruntFactory";
 
 
 // La gestion des retards pour les emprunts est portée par la classe Emprunt, qui étend
-// la classe DateObserver, 
+// la classe DateObserver, la médiathèque est le sujet, le sujet contient la liste des
+// observers
 
 export class Mediatheque extends Sujet {
 
@@ -68,6 +69,14 @@ export class Mediatheque extends Sujet {
     // ------------------------- Accesseurs ------------------------ //
     public getListeDesEmprunts(): Liste<Emprunt> {
         return this.listeDesEmprunts;
+    }
+
+    public getUnMedia(m: Media): Media {
+        return this.listeDesMedias.getUnElement(m);
+    }
+
+    public getUnEmprunteur(e : Emprunteur) {
+        return this.listeDesEmprunteurs.getUnElement(e);
     }
 
     // ----------------  Méthodes Utilisateur ----------------------
@@ -119,27 +128,44 @@ export class Mediatheque extends Sujet {
     
 
     // On emprunte un média avec un Emprunteur et un Media
+    // on aurait pu le faire par titre au lieu de média
     public emprunterMedia(e: Emprunteur, m: Media) : void {
-        // vérification si emprunteur a déjà 3 emprunts
-        if(!e.peutEmprunter(this.listeDesEmprunts)) {
-            console.log(e.getPrenom() + ", vous ne pouvez plus emprunter !!!");
+
+        //recherche de l'emprunteur dans la liste des emprunteurs
+        let emprunteur = this.getUnEmprunteur(e);
+        if (emprunteur == null) {
+            console.log(e.getPrenom() + " n'est pas inscrit à la médiathèque");
             return;
         }
+        // vérification si emprunteur a déjà 3 emprunts
+        if(!emprunteur.peutEmprunter(this.listeDesEmprunts)) {
+            console.log(emprunteur.getPrenom() + ", vous ne pouvez plus emprunter !!!");
+            return;
+        }
+
+        //recherche du média dans la liste de la médiathèque
+       let media = this.getUnMedia(m);
+
+        if (media == null) { 
+            console.log(m.getTitre() +  " n'est pas dans la liste de la médiathèque");
+            return;
+        }
+
         // vérification si il reste des exemplaires dispo du média
-        if(!m.resteDesExemplaires()) {
+        if(!media.resteDesExemplaires()) {
             console.log(e.getPrenom() + 
-            " voulait emprunter " + m.getTitre() +
+            " voulait emprunter " + media.getTitre() +
             ", dommage, il n'y a plus d'exemplaires disponibles");
             return;
         }
 
         //créer un emprunt :
-        let emprunt:Emprunt = new Emprunt(e, m);
+        let emprunt:Emprunt = new Emprunt(emprunteur, media);
         this.listeDesEmprunts.add(emprunt);
 
-        // enlever un exemplaire du média
-        this.retirerUnExemplaire(m);
-        console.log(e.getPrenom() + " fait un emprunt de " + m.getTitre() + ", " + m.exemplairesDispo());
+        // enlève un éxemplaire du média
+        media.retirerUnExemplaire();
+        console.log(emprunteur.getPrenom() + " fait un emprunt de " + media.getTitre() + ", " + media.exemplairesDispo());
 
         // ajout dans la liste des observers
         this.register(emprunt);
@@ -152,13 +178,15 @@ export class Mediatheque extends Sujet {
         
         // emprunt peut renvoyer null
         if (emprunt != null) {
+
             // rajout d'un exemplaire disponible
             this.ajouterUnExemplaire(emprunt.getMedia());
 
             // Suppression de la liste des observers
             this.unregister(emprunt);
 
-            console.log ( e.getPrenom() + " a rendu " + m.getTitre() );
+            console.log ( e.getPrenom() + " a rendu " + m.getTitre() + ", " +
+                emprunt.getMedia().exemplairesDispo() );
         }
     }
 
@@ -189,6 +217,11 @@ export class Mediatheque extends Sujet {
         }
     }
 
+    public disponibiliteDeMedia(m: Media) : void {
+        let media: Media = this.getUnMedia(m);
+        console.log(media.dateDeProchaineDispo(this.listeDesEmprunts));
+    }
+
     // --------------- Sauvegarder/Charger ------------------------ //
  
     // pour charger, il faut passer les 3 listes, mais en passant null sur une liste
@@ -198,38 +231,56 @@ export class Mediatheque extends Sujet {
         if (listeMedias != null) {
             // On passe la classe en argument pour la factory,méthode static
             let chargeurMedia = new Chargeur<Media>(listeMedias, MediaFactory);
-            this.listeDesMedias = chargeurMedia.charger();           
+            let res = chargeurMedia.charger();
+            //res est une liste de médias, on ajoute donc les médias à la liste de la médiathèque
+            while (res.hasNext()) {
+                this.listeDesMedias.add(res.suivant());
+            }
+
         }
         
         if ( listeEmprunteurs != null) {
             let chargeurEmprunteurs = new Chargeur<Emprunteur>(listeEmprunteurs, EmprunteurFactory);
-            this.listeDesEmprunteurs = chargeurEmprunteurs.charger();
-            // il faut recharger le compteur de la classe Emprunteur
-            Emprunteur.Compteur = this.listeDesEmprunteurs.taille();
+            let resEmprunteurs = chargeurEmprunteurs.charger();
+            while (resEmprunteurs.hasNext()) {
+                this.listeDesEmprunteurs.add(resEmprunteurs.suivant());
+            }
         }
+        
         
         if (listeEmprunts != null) {
             let chargeurEmprunts = new Chargeur<Emprunt>(listeEmprunts, EmpruntFactory);
-            this.listeDesEmprunts = chargeurEmprunts.charger();
-    
-            // Les observers étant des emprunts, on peut recharger la liste avec le chargeur d'emprunts
-            this.observers = chargeurEmprunts.charger();
+            let listeFinale = chargeurEmprunts.charger();
+            // ! copier les données de la liste finale dans les listes emprunts et observers
+            listeFinale.debut();
+            while (listeFinale.hasNext()) {
+                let suivant = listeFinale.suivant();
+                this.listeDesEmprunts.add(suivant);
+                this.observers.add(suivant);
+            } 
         }
     }
 
-    public enregistrer(): string {
-        // Transformer un objet/tableau en une string JSON
-        let listeMedias = JSON.stringify(this.listeDesMedias);
-        let listeEmprunteurs = JSON.stringify(this.listeDesEmprunteurs);
-        let listeEmprunts = JSON.stringify(this.listeDesEmprunts);
+    
+    public sauverMedias(): string {
+       return this.sauver(this.listeDesMedias);
+    }
 
-        // on retourne un tableau de la même structure que pour le chargement
-        let objet = new Array();
-        objet.push(listeMedias);
-        objet.push(listeEmprunteurs);
-        objet.push(listeEmprunts);
+    public sauverEmprunteurs(): string {
+        return this.sauver(this.listeDesEmprunteurs);
+    }
 
-        return JSON.stringify(objet);
+    public sauverEmprunts(): string {
+        return this.sauver(this.listeDesEmprunts);
+    }
+
+    private sauver<T extends ListeUtils>(l: Liste<T>) : string{
+        let liste = new Array();
+        l.debut();
+        while (l.hasNext()) {
+            liste.push(l.suivant());
+        }
+        return JSON.stringify(liste);
     }
 
     // ------------ Trigger pour l'envoi de mail pour les retardataires ----------- //

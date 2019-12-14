@@ -2,7 +2,11 @@ import { Media } from "./Media";
 
 //Un genre appartenant à Comédie/Drame/Thriller/Action/SF
 export enum genreDvd {
-    Comédie,Drame,Thriller,Action,SF
+    Comédie = "Comédie",
+    Drame = "Drame",
+    Thriller = "Thriller",
+    Action = "Action",
+    SF = "SF"
 }
 
 export class Dvd extends Media {
@@ -10,10 +14,10 @@ export class Dvd extends Media {
     // Un EIRD comme identifiant unique
     // comment être sûr du format ??
     
-    private realisateur: string;
-    private genre: genreDvd;
-    private maisonDeProd: string;
-    private duree: number;
+    private readonly realisateur: string;
+    private readonly genre: genreDvd;
+    private readonly maisonDeProd: string;
+    private readonly duree: number;
 
     constructor(titre: string, nbreEx: number, realisateur: string, genre: genreDvd, maisonDeProd: string, duree: number) {
         super("DVD",titre+realisateur,titre,nbreEx);

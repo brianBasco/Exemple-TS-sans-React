@@ -35,10 +35,6 @@ export class SystemDateManager  {
         this._date = new Date();
     }
 
-    setDate(d: Date): void {
-        this._date = d;
-    }
-
     getDate(): Date {
         return this._date;
     }
@@ -50,10 +46,6 @@ export class SystemDateManager  {
 
     diffInDaysWith(date: Date): number {
         return Math.ceil((this._date.getTime() - date.getTime()) / (24 * 60 * 60 * 1000));
-    }
-
-    diffInSecondsWith(date: Date): number {
-        return Math.ceil((this._date.getTime() - date.getTime()) / 1000);
     }
 
     getJour(jour: number): string {

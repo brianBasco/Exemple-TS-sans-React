@@ -15,7 +15,7 @@ export class Emprunt extends DateObserver  {
     private media: Media;
     private date: Date;
 
-    private id: string;
+    private readonly id: string;
 
     constructor(e: Emprunteur, m: Media) {
         // La clé est composée de l'id de l'emprunteur et de l'id du média
@@ -24,6 +24,7 @@ export class Emprunt extends DateObserver  {
         this.media = m;
         this.date = new Date();
         this.id = e.getId() + m.getId();
+
     }
 
     //getters
@@ -43,7 +44,8 @@ export class Emprunt extends DateObserver  {
             this.media.getType() +
             ", " + "id : " + this.media.getId() +
             ", emprunté le " + sdm.getJour(jour) + " " + this.date.getUTCDate() +
-            " " + sdm.getMois(mois) + " " + this.date.getFullYear()
+            " " + sdm.getMois(mois) + " " + this.date.getFullYear() + "\n" +
+            this.media.exemplairesDispo()
         )
     }
 
@@ -55,9 +57,10 @@ export class Emprunt extends DateObserver  {
         // envoi du mail. Un mail par retard et par emprunteur. On pourrait envoyer un mail
         // à un emprunteur avec la liste des retards.
         let retard = this.gestionDesRetards();
-        if ( retard > 30 ) {
+        let tolerance = 20;
+        if ( retard > tolerance ) {
 
-            let difference  = retard - 30;
+            let difference  = retard - tolerance;
             let jour: string;
             difference > 1 ? jour = " jours" : jour =" jour";
             //envoi du mail
@@ -79,7 +82,6 @@ export class Emprunt extends DateObserver  {
      
     // 
     public gestionDesRetards(): number {
-        //let diff = SystemDateManager.instance.diffInDaysWith(this.date);
         let diff = SystemDateManager.instance.diffInDaysWith(this.date);
         return diff;
     }

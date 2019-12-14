@@ -6,9 +6,9 @@ import { SystemDateManager } from "./utils/SystemDateManager";
 export abstract class  Media implements ListeUtils {
 
     //(Livre, CD ou DVD)
-    private type: string;
-    private id: string;
-    private titre: string;
+    private readonly type: string;
+    private readonly id: string;
+    private readonly titre: string;
     private nbreEx: number;
 
     constructor(type:string, id:string, titre: string, nbreEx: number) {
@@ -54,7 +54,7 @@ export abstract class  Media implements ListeUtils {
             }
         }
 
-        // on ajoute les 21 jours de la date laplus ancienne des emprunts
+        // on ajoute les 21 jours de la date la plus ancienne des emprunts
         let dateFinale = new Date(dateAncienne.getTime() + 21 * 24 * 60 * 60 * 1000);
 
         return ( 
@@ -62,7 +62,8 @@ export abstract class  Media implements ListeUtils {
             SystemDateManager.instance.getJour(dateFinale.getDay()) + " " +
             dateFinale.getDate() + " " +
             SystemDateManager.instance.getMois(dateFinale.getMonth()) + " " +
-            dateFinale.getFullYear() + "\n"
+            dateFinale.getFullYear() + "\n" +
+            "(sous réserve que " + this.titre + " ne soit pas rendu en retard)\n"
             );
 
            
@@ -81,8 +82,8 @@ export abstract class  Media implements ListeUtils {
 
     public resteDesExemplaires(): boolean { return this.nbreEx > 0; }
 
-    public ajouterUnExemplaire(): void { this.nbreEx ++; }
+    public ajouterUnExemplaire(): void { this.nbreEx += 1; }
 
-    public retirerUnExemplaire(): void { if (this.nbreEx > 0) this.nbreEx --; }
+    public retirerUnExemplaire(): void { if (this.nbreEx > 0) this.nbreEx -=1; }
 
 }

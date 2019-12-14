@@ -17,20 +17,16 @@ import { Mediatheque } from "./Mediatheque";
 
 export class Emprunteur implements ListeUtils {
 
-    //variable de classe, compteur du nombre d'emprunteurs
-    public static Compteur: number = 0;
-
     //variables d'instances
-    private id: string;
-    private nom: string;
-    private prenom: string;
-    private mail: string;
+    private readonly id: string;
+    private readonly nom: string;
+    private readonly prenom: string;
+    private readonly mail: string;
 
     constructor(nom: string, prenom: string, mail: string) {
-        //incrémentation du compteur du nombre d'emprunteurs
-        ++ Emprunteur.Compteur;
-        //création d'une ID unique composée du nom puis le numéro d'emprunteur
-        this.id = nom + Emprunteur.Compteur;
+
+        // ID unique : nom + prénom + mail
+        this.id = nom + prenom + mail;
         this.nom = nom;
         this.prenom = prenom;
         this.mail = mail;

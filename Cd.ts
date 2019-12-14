@@ -2,16 +2,20 @@ import { Media } from "./Media";
 
 // genre appartenant à Pop/Rock/Classique/Jazz/Rap
 export enum genreCd {
-    Pop,Rock,Classique,Jazz,Rap
+    Pop = "Pop",
+    Rock = "Rock",
+    Classique = "Classique",
+    Jazz = "Jazz",
+    Rap = "Rap"
 }
 
 export class Cd extends Media {
 
     //DiscId comme identifiant unique
-    private groupe: string;
-    private genre: genreCd;
-    private maisonDeProd: string;
-    private duree: number;
+    private readonly groupe: string;
+    private readonly genre: genreCd;
+    private readonly maisonDeProd: string;
+    private readonly duree: number;
 
     constructor(titre: string, nbreEx: number, groupe: string, genre:genreCd, maisonDeProd: string, duree: number) {
         super("CD",titre+groupe,titre,nbreEx);
